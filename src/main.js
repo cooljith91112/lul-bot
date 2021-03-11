@@ -1,7 +1,9 @@
 require('dotenv').config();
-
 const { Client, MessageEmbed, Collection } = require('discord.js');
 const fetch = require('node-fetch');
+const ytdl = require('ytdl-core');
+const ytSearch = require('yt-search');
+
 const client = new Client();
 const CMD_PREFIX = "!"
 client.on('message', (message) => {
@@ -66,6 +68,8 @@ function parseCMD(message) {
         .split(/\s+/);
     switch (CMD_NAME) {
         case 'jokes': randomJokes(message); return {};
+        case 'play' : playMusik(message, args); return {};
+        case 'stop' : stopMusik(message); return {};
         default: return null;
     }
 }
@@ -87,6 +91,51 @@ function randomJokes(message) {
 
         console.log(response);
     })
+}
+
+async function playMusik(message, args) {
+    const voiceChannel = message.member.voice.channel;
+    if (!voiceChannel) {
+        return message.channel.send("Join a voice channel to Play Music");
+    }
+    const permission = voiceChannel.permissionsFor(message.client.user);
+    if(!permission.has('CONNECT') || !permission.has('SPEAK')) {
+        return  message.channel.send("You don't have the permission to play music. 😥");
+    }
+
+    if(!args.length) {
+        return message.channel.send("Please pass something to play as second argument");
+    }
+
+    const connection = await voiceChannel.join();
+    const video = await searchVideo(args.join(' '));
+
+    if(video) {
+        const youtubeStream = ytdl(video.url, {filter: 'audioonly'});
+        connection.play(youtubeStream, {seek: 0, volume: 1})
+            .on('finish', () => {
+                voiceChannel.leave();
+            });
+        await message.reply(`Now Playing ${video.title}...`);
+    } else {
+        message.channel.send("No music found to play for you mate. Try again! 👍");
+    }
+}
+
+async function stopMusik(message) {
+    const voiceChannel = message.member.voice.channel;
+
+    if (!voiceChannel) {
+        return message.channel.send("Join a voice channel to Execute this command");
+    }
+
+    await voiceChannel.leave();
+    await message.channel.send("Stoping Music... Baye Baye.... 😅");
+}
+
+async function searchVideo(query) {
+    const searchResult = await ytSearch(query);
+    return (searchResult.videos.length > 1) ? searchResult.videos[0] : null;
 }
 
 client.login(process.env.LUL_BOT_TKN)
