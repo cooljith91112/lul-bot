@@ -8,9 +8,9 @@ client.on('message', (message) => {
     if (message.author.bot) return;
     if (message.content.startsWith(CMD_PREFIX)) {
         const commandReply = parseCMD(message);
-        if (commandReply) {
-            parseCMD(message);
-        } else {
+        if (commandReply && (typeof commandReply != "object")) {
+            message.reply(commandReply);
+        } else if(typeof commandReply != "object"){
             generateConfusionGif(message);
         }
 
@@ -26,7 +26,7 @@ client.on('message', (message) => {
 
 function parseCasualMessage(message) {
     const { content } = message;
-    switch (content.trim()) {
+    switch (content.trim().toLowerCase()) {
         case 'hello':
         case 'hi':
             return `Hey ${message.author} 🙋‍♂️. How Are You?`;
@@ -45,6 +45,7 @@ function parseCasualMessage(message) {
 }
 
 function generateConfusionGif(message) {
+    message.channel.startTyping();
     const embed = new MessageEmbed()
         .setDescription(`I dont understand what you are saying <@${process.env.KLIAS_TAG}> do you know what this guy is asking?`)
         .setColor("RANDOM");
@@ -52,7 +53,8 @@ function generateConfusionGif(message) {
     fetch(`https://api.tenor.com/v1/random?key=${process.env.TENOR_TOKEN}&q=I%20dont%20understand&limit=10`)
         .then(res => res.json())
         .then(response => {
-            embed.setImage(response.results[0].media[0].gif.url);
+            embed.setImage(response.results[randomIndex].media[0].gif.url);
+            message.channel.stopTyping();
             message.channel.send(embed);
         });
 }
@@ -63,8 +65,28 @@ function parseCMD(message) {
         .substring(CMD_PREFIX.length)
         .split(/\s+/);
     switch (CMD_NAME) {
+        case 'jokes': randomJokes(message); return {};
         default: return null;
     }
+}
+
+function randomJokes(message) {
+    message.channel.startTyping();
+    fetch(`https://official-joke-api.appspot.com/jokes/random`)
+    .then(res => res.json())
+    .then(response => {
+        message.channel.stopTyping();
+        if(response) {
+            message.channel.startTyping();
+            message.reply(response.setup);
+            setTimeout(() => {
+                message.channel.stopTyping();
+                message.reply(response.punchline);
+            }, 5000)
+        }  
+
+        console.log(response);
+    })
 }
 
 client.login(process.env.LUL_BOT_TKN)
