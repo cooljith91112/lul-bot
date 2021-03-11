@@ -10,7 +10,7 @@ client.on('message', (message) => {
         const commandReply = parseCMD(message);
         if (commandReply && (typeof commandReply != "object")) {
             message.reply(commandReply);
-        } else if(typeof commandReply != "object"){
+        } else if(!commandReply){
             generateConfusionGif(message);
         }
 
