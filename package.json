@@ -14,5 +14,6 @@
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
     "node-fetch": "^2.6.1"
-  }
+  },
+  "engines": { "node": "12.16.3" }
 }
