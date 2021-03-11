@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { Client, MessageEmbed } = require('discord.js');
+const { Client, MessageEmbed, Collection } = require('discord.js');
 const fetch = require('node-fetch');
 const client = new Client();
 const CMD_PREFIX = "!"
