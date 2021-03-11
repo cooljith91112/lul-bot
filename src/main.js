@@ -13,7 +13,7 @@ client.on('message', (message) => {
         } else {
             generateConfusionGif(message);
         }
-        
+
     } else {
         const replyMessage = parseCasualMessage(message);
         if (replyMessage) {
@@ -27,8 +27,12 @@ client.on('message', (message) => {
 function parseCasualMessage(message) {
     const { content } = message;
     switch (content.trim()) {
-        case 'hello': return `Hey ${message.author} 🙋‍♂️. How Are You?`;
-        case 'ഹലോ': return `ഹല്ലാ.... ഇതാരാ ${message.author}യോ... സുഖം തന്നെ?`;
+        case 'hello':
+        case 'hi':
+            return `Hey ${message.author} 🙋‍♂️. How Are You?`;
+        case 'ഹലോ':
+        case 'ഹി':
+            return `ഹല്ലാ.... ഇതാരാ ${message.author}യോ... സുഖം തന്നെ?`;
         case 'എന്തൊക്കെ ഉണ്ട് വിശേഷം':
         case 'enthokke und vishesham':
         case 'enthokkeyund vishesham': return `അങ്ങിനെ പോണു...🤷‍♂️ സുഖങ്ങളൊക്കെ തന്നെ?`;
@@ -55,10 +59,10 @@ function generateConfusionGif(message) {
 
 function parseCMD(message) {
     const [CMD_NAME, ...args] = message.content
-      .trim()
-      .substring(CMD_PREFIX.length)
-      .split(/\s+/);
-    switch(CMD_NAME) {
+        .trim()
+        .substring(CMD_PREFIX.length)
+        .split(/\s+/);
+    switch (CMD_NAME) {
         default: return null;
     }
 }
