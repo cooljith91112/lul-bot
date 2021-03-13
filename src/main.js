@@ -5,14 +5,16 @@ const ytdl = require('ytdl-core');
 const ytSearch = require('yt-search');
 
 const client = new Client();
-const CMD_PREFIX = "!"
+const CMD_PREFIX = "!";
+const dayToMilliS = 60 * 60 * 24 * 1000;
+
 client.on('message', (message) => {
     if (message.author.bot) return;
     if (message.content.startsWith(CMD_PREFIX)) {
         const commandReply = parseCMD(message);
         if (commandReply && (typeof commandReply != "object")) {
             message.reply(commandReply);
-        } else if(!commandReply){
+        } else if (!commandReply) {
             generateConfusionGif(message);
         }
 
@@ -25,6 +27,10 @@ client.on('message', (message) => {
         }
     }
 });
+
+client.on('ready', () => {
+    console.log("BOT is now LIVE");
+})
 
 function parseCasualMessage(message) {
     const { content } = message;
@@ -42,6 +48,7 @@ function parseCasualMessage(message) {
         case 'manusanalle pulle': return `ഇറച്ചിയും ബറോട്ടയും വേണായിരിക്കും... 🤣🤣🤣`;
         case 'നീ ആരാ':
         case 'nee araa': return `താൻ ആരാണെന്ന് തനിക്ക് അറിയാന്മേലെങ്കിൽ താൻ എന്നോട് ചോയ്ക്ക് താൻ ആരാണെന്ന്??? തനിക്ക് ഞാൻ പറഞ്ഞു തരാം താൻ ആരാണെന്ന്... 🤪🤪`;
+        case 'good night': return null;
         default: return null;
     }
 }
@@ -51,8 +58,8 @@ function generateConfusionGif(message) {
     const embed = new MessageEmbed()
         .setDescription(`I dont understand what you are saying <@${process.env.KLIAS_TAG}> do you know what this guy is asking?`)
         .setColor("RANDOM");
-    const randomIndex = Math.floor(Math.random() * 9);
-    fetch(`https://api.tenor.com/v1/random?key=${process.env.TENOR_TOKEN}&q=I%20dont%20understand&limit=10`)
+    const randomIndex = Math.floor(Math.random() * 49);
+    fetch(`https://api.tenor.com/v1/random?key=${process.env.TENOR_TOKEN}&q=I%20dont%20understand&limit=50`)
         .then(res => res.json())
         .then(response => {
             embed.setImage(response.results[randomIndex].media[0].gif.url);
@@ -68,29 +75,59 @@ function parseCMD(message) {
         .split(/\s+/);
     switch (CMD_NAME) {
         case 'jokes': randomJokes(message); return {};
-        case 'play' : playMusik(message, args); return {};
-        case 'stop' : stopMusik(message); return {};
+        case 'play': playMusik(message, args); return {};
+        case 'stop': stopMusik(message); return {};
         default: return null;
     }
 }
 
 function randomJokes(message) {
     message.channel.startTyping();
-    fetch(`https://official-joke-api.appspot.com/jokes/random`)
-    .then(res => res.json())
-    .then(response => {
+    getJokes().then(response => {
         message.channel.stopTyping();
-        if(response) {
+        if (response) {
             message.channel.startTyping();
             message.reply(response.setup);
             setTimeout(() => {
                 message.channel.stopTyping();
-                message.reply(response.punchline);
-            }, 5000)
-        }  
+                message.reply(`||${response.punchline}||`);
+            }, 5000);
+        }
+    });
+}
 
-        console.log(response);
-    })
+async function getJokes() {
+    return fetch(`https://official-joke-api.appspot.com/jokes/random`)
+        .then(res => res.json())
+}
+
+function intervalJokes() {
+    getJokesChannel().then(channel => {
+        if (channel) {
+            // channel.bulkDelete(100);
+            setInterval(jokeOfTheDay.bind(this, channel), dayToMilliS);
+        }
+    });
+}
+
+function jokeOfTheDay(channel) {
+    getJokes().then(response => {
+        if (response) {
+            const joke = new MessageEmbed()
+                .setTitle(`**${response.setup}**`)
+                .setDescription(`||${response.punchline}||`)
+                .setFooter('https://github.com/15Dkatz/official_joke_api')
+                .setColor("RANDOM");
+            channel.send(joke);
+        }
+    });
+}
+
+
+
+async function getJokesChannel() {
+    const channel = await client.channels.fetch(process.env.JOKES_CHANNEL);
+    return channel;
 }
 
 async function playMusik(message, args) {
@@ -99,20 +136,20 @@ async function playMusik(message, args) {
         return message.channel.send("Join a voice channel to Play Music");
     }
     const permission = voiceChannel.permissionsFor(message.client.user);
-    if(!permission.has('CONNECT') || !permission.has('SPEAK')) {
-        return  message.channel.send("You don't have the permission to play music. 😥");
+    if (!permission.has('CONNECT') || !permission.has('SPEAK')) {
+        return message.channel.send("You don't have the permission to play music. 😥");
     }
 
-    if(!args.length) {
+    if (!args.length) {
         return message.channel.send("Please pass something to play as second argument");
     }
 
     const connection = await voiceChannel.join();
     const video = await searchVideo(args.join(' '));
 
-    if(video) {
-        const youtubeStream = ytdl(video.url, {filter: 'audioonly'});
-        connection.play(youtubeStream, {seek: 0, volume: 1})
+    if (video) {
+        const youtubeStream = ytdl(video.url, { filter: 'audioonly' });
+        connection.play(youtubeStream, { seek: 0, volume: 1 })
             .on('finish', () => {
                 voiceChannel.leave();
             });
@@ -140,7 +177,7 @@ async function searchVideo(query) {
 
 client.login(process.env.LUL_BOT_TKN)
     .then(() => {
-        console.log("BOT Logged in");
+        intervalJokes();
     })
     .catch((error) => {
         console.error("BOT Login Failed ", error);
