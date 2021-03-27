@@ -3,6 +3,12 @@ const { Client, MessageEmbed, Collection } = require('discord.js');
 const fetch = require('node-fetch');
 const ytdl = require('ytdl-core');
 const ytSearch = require('yt-search');
+const Airtable = require('airtable');
+Airtable.configure({
+    endpointUrl: 'https://api.airtable.com',
+    apiKey: process.env.AIRTABLE_KEY
+});
+const base = Airtable.base('appppieGLc8loZp5H');
 
 const client = new Client();
 const CMD_PREFIX = "!";
@@ -79,6 +85,7 @@ function parseCMD(message) {
         case 'jokes': randomJokes(message); return {};
         case 'play': playMusik(message, args); return {};
         case 'stop': stopMusik(message); return {};
+        case 'loadout': getCodMLoadOut(message, args); return{};
         default: return null;
     }
 }
@@ -151,9 +158,11 @@ async function playMusik(message, args) {
 
     if (video) {
         const youtubeStream = ytdl(video.url, { filter: 'audioonly' });
+        client.user.setPresence({activity: {name: `${video.title}`, type: 'LISTENING'}});
         connection.play(youtubeStream, { seek: 0, volume: 1 })
             .on('finish', () => {
                 voiceChannel.leave();
+                client.user.setPresence({activity: {name: ` `}});
             });
         await message.reply(`Now Playing ${video.title}...`);
     } else {
@@ -170,11 +179,36 @@ async function stopMusik(message) {
 
     await voiceChannel.leave();
     await message.channel.send("Stoping Music... Baye Baye.... 😅");
+    client.user.setPresence({activity: {name: `COMMANDS`, type: 'LISTENING'}});
 }
 
 async function searchVideo(query) {
     const searchResult = await ytSearch(query);
     return (searchResult.videos.length > 1) ? searchResult.videos[0] : null;
+}
+
+async function getCodMLoadOut(message, args) {
+    const codUserName = args[0];
+    if(!codUserName) return;
+    base('cod_loadout').select({
+        maxRecords: 2,
+        view: "Grid view",
+        filterByFormula: `({cod_username} = '${args[0]}')`
+    }).eachPage(function page(records, fetchNextPage) {
+        records.forEach((record) => {
+            const loadOutMessage = new MessageEmbed()
+                .setTitle(`Loadout of ${codUserName} : ${record.get('cod_match_type')}`)
+                .addField('Weapon Name', record.get('cod_weapon_name'),true)
+                .addField('Weapon Type', record.get('cod_weapon_type'),true)
+                .addField('Attachments', record.get('cod_weapon_attachments'),true)
+                .setColor("RANDOM");
+            message.channel.send(loadOutMessage);
+        });
+        fetchNextPage();
+    
+    }, function done(err) {
+        if (err) { console.error(err); return; }
+    });
 }
 
 client.login(process.env.LUL_BOT_TKN)
