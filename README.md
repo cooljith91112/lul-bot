@@ -2,7 +2,7 @@
 <p align="center">
   <img src="assets/logo.png" alt="lul-bot-logo" width="120px" height="120px"/>
   <br>
-  <i>A Discord bot writted for your server</i>
+  <i>A Discord bot written for your server</i>
   <br>
 </p>
 <hr>
