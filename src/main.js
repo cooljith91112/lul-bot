@@ -195,16 +195,20 @@ async function getCodMLoadOut(message, args) {
         view: "Grid view",
         filterByFormula: `({cod_username} = '${args[0]}')`
     }).eachPage(function page(records, fetchNextPage) {
-        records.forEach((record) => {
-            const loadOutMessage = new MessageEmbed()
+        if (records && records.length > 0) {
+            records.forEach((record) => {
+                const loadOutMessage = new MessageEmbed()
                 .setTitle(`Loadout of ${codUserName} : ${record.get('cod_match_type')}`)
                 .addField('Weapon Name', record.get('cod_weapon_name'),true)
                 .addField('Weapon Type', record.get('cod_weapon_type'),true)
                 .addField('Attachments', record.get('cod_weapon_attachments'),true)
                 .setColor("RANDOM");
-            message.channel.send(loadOutMessage);
-        });
-        fetchNextPage();
+                message.channel.send(loadOutMessage);
+            });
+            fetchNextPage();
+        } else {
+            message.channel.send(`No Loadout found for ***${codUserName}***`);
+        }
     
     }, function done(err) {
         if (err) { console.error(err); return; }
