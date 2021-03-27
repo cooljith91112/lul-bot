@@ -1,8 +1,8 @@
 require('dotenv').config();
 const fs = require('fs');
-const { Client, MessageEmbed, Collection } = require('discord.js');
-const fetch = require('node-fetch');
+const { Client, Collection } = require('discord.js');
 const confusion = require('./commons/confusion');
+
 const client = new Client();
 client.commands = new Collection();
 let casualMessages = {};
