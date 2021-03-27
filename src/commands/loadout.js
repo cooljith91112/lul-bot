@@ -5,30 +5,34 @@ Airtable.configure({
     apiKey: process.env.AIRTABLE_KEY
 });
 const base = Airtable.base('appppieGLc8loZp5H');
-const AirTableFields = {
+const AirTableConfigs = {
+    MAIN_TABLE: 'cod_loadout',
+    WEAPONS_TYPE_TABLE: 'Weapon Types',
+    WEAPONS_TABLE: 'Weapons',
+    GRID_VIEW: 'Grid view',
     WEAPON_TYPE: 'cod_weapon_type',
     WEAPON_NAME: 'cod_weapon_name',
     MATCH_TYPE: 'cod_match_type',
-    ATTACHMENTS: 'cod_weapon_attachments'
+    ATTACHMENTS: 'cod_weapon_attachments',
 };
 
 async function getCodMLoadOut(message, args) {
     const codUserName = args[0];
     if (!codUserName) return;
-    base('cod_loadout').select({
+    base(AirTableConfigs.MAIN_TABLE).select({
         maxRecords: 2,
-        view: "Grid view",
+        view: AirTableConfigs.GRID_VIEW,
         filterByFormula: `({cod_username} = '${args[0]}')`
     }).eachPage((records, fetchNextPage) => {
         if (records && records.length > 0) {
             records.forEach(async (record) => {
-                const weaponType = await getWeaponType(record.get(AirTableFields.WEAPON_TYPE));
-                const weaponName = await getWeaponName(record.get(AirTableFields.WEAPON_NAME));
+                const weaponType = await getWeaponType(record.get(AirTableConfigs.WEAPON_TYPE));
+                const weaponName = await getWeaponName(record.get(AirTableConfigs.WEAPON_NAME));
                 const loadOutMessage = new MessageEmbed()
-                    .setTitle(`Loadout of ${codUserName} : ${record.get(AirTableFields.MATCH_TYPE)}`)
+                    .setTitle(`Loadout of ${codUserName} : ${record.get(AirTableConfigs.MATCH_TYPE)}`)
                     .addField('Weapon Name', weaponName, true)
                     .addField('Weapon Type', weaponType, true)
-                    .addField('Attachments', record.get(AirTableFields.ATTACHMENTS), true)
+                    .addField('Attachments', record.get(AirTableConfigs.ATTACHMENTS), true)
                     .setColor("RANDOM");
                 message.channel.send(loadOutMessage);
             });
@@ -44,12 +48,12 @@ async function getCodMLoadOut(message, args) {
 
 async function getWeaponType(weaponType) {
     return new Promise((resolve, reject) => {
-        base('Weapon Types').find(weaponType, (error, record) => {
+        base(AirTableConfigs.WEAPONS_TYPE_TABLE).find(weaponType, (error, record) => {
             if (error) {
                 console.log(error);
                 reject();
             } else {
-                resolve(record.get(AirTableFields.WEAPON_TYPE));
+                resolve(record.get(AirTableConfigs.WEAPON_TYPE));
             }
         });
     })
@@ -57,12 +61,12 @@ async function getWeaponType(weaponType) {
 
 async function getWeaponName(weaponName) {
     return new Promise((resolve, reject) => {
-        base('Weapons').find(weaponName, (error, record) => {
+        base(AirTableConfigs.WEAPONS_TABLE).find(weaponName, (error, record) => {
             if (error) {
                 console.log(error);
                 reject();
             } else {
-                resolve(record.get(AirTableFields.WEAPON_NAME));
+                resolve(record.get(AirTableConfigs.WEAPON_NAME));
             }
         });
     })
