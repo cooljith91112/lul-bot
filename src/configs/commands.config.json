@@ -1,0 +1,24 @@
+{
+    "commands" :[
+        {
+            "name": "jokes",
+            "description": "Bad Jokes Command",
+            "file": "./commands/jokes.js"
+        },
+        {
+            "name": "play",
+            "description": "Play Music",
+            "file": "./commands/play.js"
+        },
+        {
+            "name": "stop",
+            "description": "Stop Music",
+            "file": "./commands/stop.js"
+        },
+        {
+            "name": "loadout",
+            "description": "Get CoD Mobile User Loadout",
+            "file": "./commands/loadout.js"
+        }
+    ]
+}
