@@ -7,7 +7,6 @@ const client = new Client();
 client.commands = new Collection();
 let casualMessages = {};
 const CMD_PREFIX = "!";
-const dayToMilliS = 60 * 60 * 24 * 1000;
 
 client.on('message', (message) => {
     if (message.author.bot) return;
