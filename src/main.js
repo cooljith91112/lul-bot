@@ -64,7 +64,11 @@ function parseCMD(message) {
 
     if (!client.commands.has(CMD_NAME)) return false;
 
-    client.commands.get(CMD_NAME).execute(client, message, args);
+    if (typeof client.commands.get(CMD_NAME).execute === "function") {
+        client.commands.get(CMD_NAME).execute(client, message, args);
+    } else {
+        console.log(`execute method is not implemented for ${CMD_NAME}.js`);
+    }
 
     return true;
 }
