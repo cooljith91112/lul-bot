@@ -19,6 +19,11 @@
             "name": "loadout",
             "description": "Get CoD Mobile User Loadout",
             "file": "./commands/loadout.js"
+        },
+        {
+            "name": "vaccine",
+            "description": "Get Vaccine Availability by Pincode",
+            "file": "./commands/vaccine.js"
         }
     ]
 }
