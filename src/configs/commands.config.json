@@ -24,6 +24,11 @@
             "name": "vaccine",
             "description": "Get Vaccine Availability by Pincode",
             "file": "./commands/vaccine.js"
+        },
+        {
+            "name": "gt",
+            "description": "Game of Thrones Quotes",
+            "file": "./commands/gt.js"
         }
     ]
 }
