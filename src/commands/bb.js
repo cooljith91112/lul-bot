@@ -1,21 +1,21 @@
 const axios = require('axios').default;
 const { MessageEmbed } = require('discord.js');
 const instance = axios.create({
-    baseURL: 'https://game-of-thrones-quotes.herokuapp.com/v1'
+    baseURL: 'https://breaking-bad-quotes.herokuapp.com/v1'
 });
 
 async function getRandomQuotes(message, args) {
-    const randomQuotesUrl = "/random";
+    const randomQuotesUrl = "/quotes";
     try {
         const result = await instance.get(randomQuotesUrl);
-        const { sentence, character: { name, house: { name: houseName } } } = result.data;
+        const { quote, author } = result.data[0];
         const randomQuoteMessage = new MessageEmbed()
-            .setDescription(sentence)
-            .setFooter(`${name}, ${houseName}`);
+            .setDescription(quote)
+            .setFooter(`${author}`);
         message.channel.send(randomQuoteMessage);
     } catch (error) {
         const errorMessage = new MessageEmbed()
-            .setTitle("Something went wrong: Error getting quotes from Arya Stark")
+            .setTitle("Stay out of territory: Error getting quotes from Walter White")
             .setColor("RED");
         message.channel.send(errorMessage);
     }

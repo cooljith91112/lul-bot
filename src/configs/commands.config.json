@@ -29,6 +29,11 @@
             "name": "got",
             "description": "Game of Thrones Quotes",
             "file": "./commands/got.js"
+        },
+        {
+            "name": "bb",
+            "description": "Breaking Bad Quotes",
+            "file": "./commands/bb.js"
         }
     ]
 }
