@@ -34,6 +34,11 @@
             "name": "bb",
             "description": "Breaking Bad Quotes",
             "file": "./commands/bb.js"
+        },
+        {
+            "name": "dark",
+            "description": "Dark Series Quotes",
+            "file": "./commands/dark.js"
         }
     ]
 }
