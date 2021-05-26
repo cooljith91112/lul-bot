@@ -9,7 +9,7 @@
 
 ## Documentation
 - ```main.js``` is the entry file
-- ```commands.config.json``` is the main config file which holds the ```command``` & ```command``` file path.
+- ```commands.config.json``` is the main config file which holds the ```command``` & ```command file path```  .
 - ```src/commands``` folder contains all the commands that is configured in ```commands.config.json```. A mandatory method ```execute``` should be implemented, that will be the default execution method while triggerring a command
 
 ### Prerequisites
