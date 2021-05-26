@@ -26,9 +26,9 @@
             "file": "./commands/vaccine.js"
         },
         {
-            "name": "gt",
+            "name": "got",
             "description": "Game of Thrones Quotes",
-            "file": "./commands/gt.js"
+            "file": "./commands/got.js"
         }
     ]
 }
