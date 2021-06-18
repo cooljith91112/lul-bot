@@ -15,17 +15,25 @@ async function playMusik(client, message, args) {
     }
 
     const connection = await voiceChannel.join();
-    const video = await searchVideo(args.join(' '));
+    let videoUrl = false;
+    let video;
+    const youtubeRegex = /(http:|https:)?\/\/(www\.)?(youtube.com|youtu.be)\/(watch)?(\?v=)?(\S+)?/; 
+    if (youtubeRegex.test(args[0])) {
+        video = args[0];
+        videoUrl = true;
+    } else {
+        video = await searchVideo(args.join(' '));
+    }
 
     if (video) {
-        const youtubeStream = ytdl(video.url, { filter: 'audioonly' });
+        const youtubeStream = ytdl(videoUrl ? video : video.url, { filter: 'audioonly' });
         client.user.setPresence({ activity: { name: `${video.title}`, type: 'LISTENING' } });
         connection.play(youtubeStream, { seek: 0, volume: 1 })
             .on('finish', () => {
                 voiceChannel.leave();
                 client.user.setPresence({ activity: { name: ` ` } });
             });
-        await message.reply(`Now Playing ${video.title}...`);
+        await message.reply(`Now Playing ${videoUrl ? args[0] : video.title}...`);
     } else {
         message.channel.send("No music found to play for you mate. Try again! 👍");
     }
