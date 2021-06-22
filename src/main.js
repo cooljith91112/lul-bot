@@ -13,7 +13,7 @@ client.on('message', (message) => {
     if (message.content.startsWith(CMD_PREFIX)) {
         const commandReply = parseCMD(message);
         if (!commandReply) {
-            confusion.execute(message);
+            //confusion.execute(message);
         }
     } else {
         const replyMessage = parseCasualMessage(message);
