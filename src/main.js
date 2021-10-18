@@ -60,7 +60,7 @@ function parseCasualMessage(message) {
             }
         })
         
-        return currentKey;
+        return currentKey ? casualMessages[currentKey]: null;
     }
     return casualMessages[parsedMessage];
 }
