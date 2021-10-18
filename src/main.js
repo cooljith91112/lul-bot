@@ -52,7 +52,17 @@ function initLanguages() {
 function parseCasualMessage(message) {
     const { content } = message;
     const parsedMessage = content.trim().toLowerCase();
-    if (!casualMessages.hasOwnProperty(parsedMessage)) return null;
+    if (!casualMessages.hasOwnProperty(parsedMessage)) {
+        let currentKey;
+        parsedMessage.split(" ").forEach((lang) => {
+            if(casualMessages.hasOwnProperty(lang)) {
+                currentKey = lang;
+            }
+            break;
+        })
+        
+        return currentKey;
+    }
     return casualMessages[parsedMessage];
 }
 
