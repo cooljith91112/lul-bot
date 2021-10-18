@@ -58,7 +58,6 @@ function parseCasualMessage(message) {
             if(casualMessages.hasOwnProperty(lang)) {
                 currentKey = lang;
             }
-            break;
         })
         
         return currentKey;
