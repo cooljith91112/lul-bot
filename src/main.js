@@ -55,8 +55,8 @@ function parseCasualMessage(message) {
     if (!casualMessages.hasOwnProperty(parsedMessage)) {
         let currentKey;
         parsedMessage.split(" ").forEach((lang) => {
-            if(casualMessages.hasOwnProperty(lang)) {
-                currentKey = lang;
+            if(casualMessages.hasOwnProperty(lang.toString().trim())) {
+                currentKey = lang.toString().trim();
             }
         })
         
