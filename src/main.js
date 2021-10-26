@@ -13,7 +13,7 @@ client.on('message', (message) => {
     if (message.content.startsWith(CMD_PREFIX)) {
         const commandReply = parseCMD(message);
         if (!commandReply) {
-            //confusion.execute(message);
+            confusion.execute(message);
         }
     } else {
         const replyMessage = parseCasualMessage(message);
@@ -55,6 +55,7 @@ function parseCasualMessage(message) {
     if (!casualMessages.hasOwnProperty(parsedMessage)) {
         let currentKey;
         parsedMessage.split(" ").forEach((lang) => {
+            console.log(lang);
             if(casualMessages.hasOwnProperty(lang.toString().trim())) {
                 currentKey = lang.toString().trim();
             }
